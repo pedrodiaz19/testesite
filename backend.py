@@ -30,11 +30,14 @@ def consulta():
 
     entrada = re.sub(r"[^\d]", "", entrada)  # remove caracteres não numéricos
 
-    resultados = buscar_processo_por_entrada(entrada)
-    if resultados:
-        return jsonify(resultados)
-    else:
-        return jsonify({"erro": "Nenhum resultado encontrado"}), 404
+    try:
+        resultados = buscar_processo_por_entrada(entrada)
+        if resultados:
+            return jsonify(resultados)
+        else:
+            return jsonify({"erro": "Nenhum resultado encontrado"}), 404
+    except Exception as e:
+        return jsonify({"erro": f"Erro interno: {str(e)}"}), 500
 
 def buscar_processo_por_entrada(entrada):
     db_processos = os.path.join(BASE_DIR, "processos.db")
@@ -44,7 +47,6 @@ def buscar_processo_por_entrada(entrada):
     cursor_proc = conn_proc.cursor()
 
     resultados = []
-
     cursor_proc.execute("SELECT processo, vara, nome, status, cpf, matriculas, tipo FROM processos WHERE cpf = ?", (entrada,))
     resultados = cursor_proc.fetchall()
 
@@ -52,7 +54,7 @@ def buscar_processo_por_entrada(entrada):
         cursor_proc.execute("SELECT processo, vara, nome, status, cpf, matriculas, tipo FROM processos")
         for row in cursor_proc.fetchall():
             processo, vara, nome, status, cpf, matriculas, tipo = row
-            lista_matriculas = [m.strip() for m in re.split(r"[\/,]", matriculas)]
+            lista_matriculas = [m.strip() for m in re.split(r"[\/,"]", matriculas)]
             if entrada in lista_matriculas:
                 resultados.append(row)
 
@@ -67,12 +69,12 @@ def buscar_processo_por_entrada(entrada):
 
     saida = []
     for processo, vara, nome, status, cpf, matriculas, tipo in resultados:
-        todas_matriculas = [m.strip() for m in re.split(r"[\/,]", matriculas) if m.strip()]
+        todas_matriculas = [m.strip() for m in re.split(r"[\/,"]", matriculas) if m.strip()]
         links = []
 
         cursor_calc.execute("SELECT nome, matriculas, link, link_extra FROM calculos")
         for nome_calc, matr_calc, link, link_extra in cursor_calc.fetchall():
-            mats = [m.strip() for m in re.split(r"[\/,]", matr_calc)] if matr_calc else []
+            mats = [m.strip() for m in re.split(r"[\/,"]", matr_calc)] if matr_calc else []
 
             if any(m in todas_matriculas for m in mats):
                 if tipo in ("SEPE 1", "SFPMVR"):
