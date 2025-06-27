@@ -1,4 +1,40 @@
-# app.py (somente trecho alterado da função buscar_processo_por_entrada)
+import os 
+import re
+import sqlite3
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
+
+app = Flask(__name__, static_folder="static")
+CORS(app)
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PORT = int(os.environ.get("PORT", 5000))
+
+@app.route("/")
+def index():
+    return send_from_directory(BASE_DIR, "index.html")
+
+@app.route("/static/<path:filename>")
+def static_files(filename):
+    return send_from_directory(os.path.join(BASE_DIR, "static"), filename)
+
+@app.route("/index.html")
+def index_html():
+    return send_from_directory(BASE_DIR, "index.html")
+
+@app.route("/consulta", methods=["GET"])
+def consulta():
+    entrada = request.args.get("processo", "").strip()
+    if not entrada:
+        return jsonify({"erro": "Número do processo, CPF ou matrícula é obrigatório"}), 400
+
+    entrada = re.sub(r"[^\d]", "", entrada)  # remove caracteres não numéricos
+
+    resultados = buscar_processo_por_entrada(entrada)
+    if resultados:
+        return jsonify(resultados)
+    else:
+        return jsonify({"erro": "Nenhum resultado encontrado"}), 404
 
 def buscar_processo_por_entrada(entrada):
     db_processos = os.path.join(BASE_DIR, "processos.db")
@@ -26,7 +62,6 @@ def buscar_processo_por_entrada(entrada):
 
     conn_proc.close()
 
-    # Conectar ao banco de cálculos
     conn_calc = sqlite3.connect(db_calculos)
     cursor_calc = conn_calc.cursor()
 
@@ -69,3 +104,6 @@ def buscar_processo_por_entrada(entrada):
 
     conn_calc.close()
     return saida
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=PORT)
