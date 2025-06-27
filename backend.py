@@ -1,3 +1,4 @@
+# app.py
 import os 
 import re
 import sqlite3
@@ -45,56 +46,56 @@ def buscar_processo_por_entrada(entrada):
 
     resultados = []
 
-    # Primeiro: buscar por CPF
-    cursor_proc.execute("SELECT processo, vara, nome, status, cpf, matriculas FROM processos WHERE cpf = ?", (entrada,))
+    cursor_proc.execute("SELECT processo, vara, nome, status, cpf, matriculas, tipo FROM processos WHERE cpf = ?", (entrada,))
     resultados = cursor_proc.fetchall()
 
-    # Se não encontrou por CPF, tenta buscar por matrícula
     if not resultados:
-        cursor_proc.execute("SELECT processo, vara, nome, status, cpf, matriculas FROM processos")
+        cursor_proc.execute("SELECT processo, vara, nome, status, cpf, matriculas, tipo FROM processos")
         for row in cursor_proc.fetchall():
-            processo, vara, nome, status, cpf, matriculas = row
-            lista_matriculas = [m.strip() for m in re.split(r"[\/,]", matriculas)]
+            processo, vara, nome, status, cpf, matriculas, tipo = row
+            lista_matriculas = [m.strip() for m in re.split(r"[\/,"]", matriculas)]
             if entrada in lista_matriculas:
-                resultados = [row]
-                break
+                resultados.append(row)
 
     if not resultados:
         conn_proc.close()
         return []
 
-    # Agrupar matrículas, e usar os dados do primeiro processo como referência
-    processo_ref, vara_ref, nome_ref, status_ref, cpf_ref, _ = resultados[0]
     todas_matriculas = []
+    tipos = set()
+    processo_ref, vara_ref, nome_ref, status_ref, cpf_ref, _ = resultados[0][:6]
 
     for row in resultados:
-        _, _, _, _, _, matriculas = row
-        todas_matriculas.extend([m.strip() for m in re.split(r"[\/,]", matriculas)])
+        _, _, _, _, _, matriculas, tipo = row
+        tipos.add(tipo)
+        todas_matriculas.extend([m.strip() for m in re.split(r"[\/,"]", matriculas)])
 
-    todas_matriculas = list(set(m for m in todas_matriculas if m))  # Remove duplicatas
+    todas_matriculas = list(set(m for m in todas_matriculas if m))
 
     conn_proc.close()
 
-    # Agora buscar os cálculos com base em todas as matrículas
     conn_calc = sqlite3.connect(db_calculos)
     cursor_calc = conn_calc.cursor()
 
     links = []
+    cursor_calc.execute("SELECT nome, matriculas, link, link_extra FROM calculos")
+    for nome_calc, matr_calc, link, link_extra in cursor_calc.fetchall():
+        mats = [m.strip() for m in re.split(r"[\/,"]", matr_calc)] if matr_calc else []
 
-    cursor_calc.execute("SELECT nome, matriculas, link FROM calculos")
-    for nome_calc, matr_calc, link in cursor_calc.fetchall():
-        mats = [m.strip() for m in re.split(r"[\/,]", matr_calc)] if matr_calc else []
         if any(m in todas_matriculas for m in mats):
-            if link not in links:
-                links.append(link)
+            if any(t in ("SEPE 1", "SFPMVR") for t in tipos):
+                if link and link not in links:
+                    links.append(link)
+            else:
+                if link_extra and link_extra not in links:
+                    links.append(link_extra)
 
-    # Se nenhum link foi encontrado, tenta buscar por nome
     if not links:
         nome_normalizado = re.sub(r"\s+", "", nome_ref).lower()
         cursor_calc.execute("SELECT nome, link FROM calculos")
         for nome_calc, link in cursor_calc.fetchall():
             nome_calc_normalizado = re.sub(r"\s+", "", nome_calc).lower()
-            if nome_normalizado in nome_calc_normalizado or nome_calc_normalizado in nome_normalizado:
+            if nome_normalizado == nome_calc_normalizado:
                 if link not in links:
                     links.append(link)
 
@@ -112,3 +113,4 @@ def buscar_processo_por_entrada(entrada):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=PORT)
+
