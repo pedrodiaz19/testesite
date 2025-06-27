@@ -1,5 +1,3 @@
-**index.html**
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -90,20 +88,18 @@
             <p>Para acessar as informações, digite seu número de CPF ou matrícula e clique em <strong>Consultar</strong>.</p>
         </div>
 
-        <input type="text" id="numero_processo" placeholder="Digite o número de matrícula ou CPF" onkeydown="verificaEnter(event)">
-        <button onclick="consultarProcesso()">Consultar</button>
+        <!-- FORMULÁRIO COM SUPORTE AO ENTER -->
+        <form onsubmit="consultarProcesso(); return false;">
+            <input type="text" id="numero_processo" placeholder="Digite o número de matrícula ou CPF">
+            <button type="submit">Consultar</button>
+        </form>
+
         <div id="resultado" class="resultado-container"></div>
 
         <div class="atualizacao">Última atualização do site: 10/06/2025</div>
     </div>
 
     <script>
-        function verificaEnter(event) {
-            if (event.key === "Enter") {
-                consultarProcesso();
-            }
-        }
-
         function consultarProcesso() {
             let entrada = document.getElementById("numero_processo").value;
             let resultadoDiv = document.getElementById("resultado");
@@ -140,6 +136,7 @@
 
                             resultadoDiv.innerHTML += `
                                 <div class='resultado'>
+                                    <p><strong>${item.tipo}</strong></p>
                                     <p><strong>Processo:</strong> ${item.processo}</p>
                                     <p><strong>Vara:</strong> ${item.vara}</p>
                                     <p><strong>Nome:</strong> ${item.nome}</p>
