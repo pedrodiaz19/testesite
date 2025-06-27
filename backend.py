@@ -113,4 +113,3 @@ def buscar_processo_por_entrada(entrada):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=PORT)
-
