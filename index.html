@@ -115,7 +115,6 @@
             <p>Para acessar as informações, digite seu número de CPF ou matrícula e clique em <strong>Consultar</strong>.</p>
         </div>
 
-        <!-- FORMULÁRIO COM SUPORTE AO ENTER -->
         <form onsubmit="consultarProcesso(); return false;">
             <input type="text" id="numero_processo" placeholder="Digite o número de matrícula ou CPF">
             <button type="submit">Consultar</button>
@@ -165,7 +164,7 @@
                                 <div class='resultado'>
                                     <div class="tipo">
                                         <div class="rotulo">Processo de origem:</div>
-                                        <div class="numero">${item.tipo}</div>
+                                        <div class="numero"><strong>${item.tipo}</strong></div>
                                     </div>
                                     <p><strong>Processo:</strong> ${item.processo}</p>
                                     <p><strong>Vara:</strong> ${item.vara}</p>
