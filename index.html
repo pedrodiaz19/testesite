@@ -79,15 +79,11 @@
 
         .tipo {
             text-align: center;
+            font-size: 18px;
             margin-bottom: 10px;
         }
 
-        .tipo .rotulo {
-            font-weight: bold;
-        }
-
         .tipo .numero {
-            margin-top: 4px;
             font-weight: bold;
         }
 
@@ -163,10 +159,7 @@
 
                             resultadoDiv.innerHTML += `
                                 <div class='resultado'>
-                                    <div class="tipo">
-                                        <div class="rotulo">Processo de origem:</div>
-                                        <div class="numero"><strong>${item.tipo}</strong></div>
-                                    </div>
+                                    <p class="tipo"><strong>Processo de origem:</strong> <span class="numero">${item.tipo}</span></p>
                                     <p><strong>Processo:</strong> ${item.processo}</p>
                                     <p><strong>Vara:</strong> ${item.vara}</p>
                                     <p><strong>Nome:</strong> ${item.nome}</p>
