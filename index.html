@@ -83,8 +83,13 @@
             margin-bottom: 10px;
         }
 
+        .tipo .rotulo {
+            font-weight: bold;
+        }
+
         .tipo .numero {
             font-weight: bold;
+            margin-top: 4px;
         }
 
         .atualizacao {
@@ -159,7 +164,10 @@
 
                             resultadoDiv.innerHTML += `
                                 <div class='resultado'>
-                                    <p class="tipo"><strong>Processo de origem:</strong> <span class="numero">${item.tipo}</span></p>
+                                    <div class="tipo">
+                                        <div class="rotulo">Processo de origem:</div>
+                                        <div class="numero">${item.tipo}</div>
+                                    </div>
                                     <p><strong>Processo:</strong> ${item.processo}</p>
                                     <p><strong>Vara:</strong> ${item.vara}</p>
                                     <p><strong>Nome:</strong> ${item.nome}</p>
