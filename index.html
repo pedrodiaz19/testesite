@@ -77,11 +77,17 @@
             margin: 5px 0;
         }
 
-        .resultado strong.tipo {
-            display: block;
+        .tipo {
             text-align: center;
-            font-size: 18px;
             margin-bottom: 10px;
+        }
+
+        .tipo .rotulo {
+            font-weight: bold;
+        }
+
+        .tipo .numero {
+            margin-top: 4px;
         }
 
         .atualizacao {
@@ -157,7 +163,10 @@
 
                             resultadoDiv.innerHTML += `
                                 <div class='resultado'>
-                                    <strong class='tipo'>${item.tipo}</strong>
+                                    <div class="tipo">
+                                        <div class="rotulo">Processo de origem:</div>
+                                        <div class="numero">${item.tipo}</div>
+                                    </div>
                                     <p><strong>Processo:</strong> ${item.processo}</p>
                                     <p><strong>Vara:</strong> ${item.vara}</p>
                                     <p><strong>Nome:</strong> ${item.nome}</p>
