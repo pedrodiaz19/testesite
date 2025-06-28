@@ -79,7 +79,6 @@
 
         .tipo {
             text-align: center;
-            font-size: 18px;
             margin-bottom: 10px;
         }
 
@@ -88,7 +87,6 @@
         }
 
         .tipo .numero {
-            font-weight: bold;
             margin-top: 4px;
         }
 
@@ -117,6 +115,7 @@
             <p>Para acessar as informações, digite seu número de CPF ou matrícula e clique em <strong>Consultar</strong>.</p>
         </div>
 
+        <!-- FORMULÁRIO COM SUPORTE AO ENTER -->
         <form onsubmit="consultarProcesso(); return false;">
             <input type="text" id="numero_processo" placeholder="Digite o número de matrícula ou CPF">
             <button type="submit">Consultar</button>
